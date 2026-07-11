@@ -1,0 +1,70 @@
+{
+    "brand_name": "TraderschemePro",
+    "brand_logo": "brand/platform-logo.svg",
+    "brand_logo_dark": "brand/platform-logo.svg",
+    "brand_domain": "traderschemepro.com",
+    "brand_hostname": {
+        "staging": "staging.traderschemepro.com",
+        "production": "traderschemepro.com"
+    },
+    "platform": {
+        "name": "TraderschemePro",
+        "description": "Automate Your Trading. Amplify Your Returns. Powered by Deriv.",
+        "logo": "brand/platform-logo.svg",
+        "home_url": "https://traderschemepro.com",
+        "help_centre_url": "https://traderschemepro.com"
+    },
+    "signup_url": {
+        "production": "https://traderschemepro.com",
+        "staging": "https://staging.traderschemepro.com"
+    },
+    "deposit_url": {
+        "staging": "https://staging.traderschemepro.com/transfer",
+        "production": "https://traderschemepro.com/transfer"
+    },
+    "auth": {
+        "staging": "https://staging-auth.deriv.com",
+        "production": "https://auth.deriv.com",
+        "oauth_scopes": ["trade", "account_manage"],
+        "oauth_redirect_uri_staging": "https://staging.traderschemepro.com",
+        "oauth_redirect_uri_production": "https://traderschemepro.com",
+        "oauth_app_id": "33pkUgT0b6Ul5OmBz64DR"
+    },
+    "derivws": {
+        "staging": "https://staging-api.derivws.com",
+        "production": "https://api.derivws.com"
+    },
+    "api_core": {
+        "staging": "staging-api-core.deriv.com",
+        "production": "api-core.deriv.com"
+    },
+    "api": {
+        "staging": "staging-api.deriv.com",
+        "production": "api.deriv.com"
+    },
+    "app_id": {
+        "staging": 16929,
+        "production": 16929
+    },
+    "colors": {
+        "primary": "#1a56db",
+        "secondary": "#1e3a5f",
+        "tertiary": "#0ea5e9",
+        "success": "#10b981",
+        "danger": "#ef4444",
+        "warning": "#f59e0b",
+        "info": "#0ea5e9",
+        "neutral": "#6b7280",
+        "black": "#0f172a",
+        "white": "#ffffff"
+    },
+    "color_variants": {
+        "auto_generate": true,
+        "lighten_percentage": 10,
+        "darken_percentage": 10
+    },
+    "features": {
+        "dark_mode": true,
+        "language_switcher": false
+    }
+}
