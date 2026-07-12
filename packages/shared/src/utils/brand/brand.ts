@@ -2,8 +2,15 @@
 import config_data from '../../../../../brand.config.json';
 import { appendLangParam } from '../url/helpers';
 
+/**
+ * Reads the deployed domain from the DOMAIN env var (e.g. "mytradingapp.com").
+ * Set this in your .env for local dev or in your host's env var settings for
+ * staging/production. Falls back to brand.config.json's brand_domain when unset.
+ */
+const getEnvDomain = (): string | undefined => process.env.DOMAIN;
+
 export const getBrandDomain = (): string => {
-    return (config_data as Record<string, unknown> & typeof config_data).brand_domain as string;
+    return getEnvDomain() ?? ((config_data as Record<string, unknown> & typeof config_data).brand_domain as string);
 };
 
 export const getBrandName = () => {
@@ -21,18 +28,21 @@ export const getBrandLogo = () => {
 export const isProduction = (): boolean => {
     if (typeof window === 'undefined') return false;
     const hostname = window.location.hostname;
-    const production_hostname = config_data.brand_hostname.production;
+    const production_hostname = getEnvDomain() ?? config_data.brand_hostname.production;
     return hostname === production_hostname;
 };
 
 export const getBrandHostname = () => {
+    const env_domain = getEnvDomain();
+    if (env_domain) {
+        return substituteDerivDomain(isProduction() ? env_domain : `staging.${env_domain}`);
+    }
     const hostname = isProduction() ? config_data.brand_hostname.production : config_data.brand_hostname.staging;
     return substituteDerivDomain(hostname);
 };
 
 export const getBrandUrl = () => {
-    const hostname = isProduction() ? config_data.brand_hostname.production : config_data.brand_hostname.staging;
-    return `https://${substituteDerivDomain(hostname)}`;
+    return `https://${getBrandHostname()}`;
 };
 
 export const getBrandHomeUrl = (language?: string) => {
@@ -71,11 +81,9 @@ export const getPlatformDescription = (): string => {
 };
 
 export const getAppId = (): number => {
-    const app_id = (config_data as Record<string, unknown> & typeof config_data).app_id as
-        | { staging: number; production: number }
-        | undefined;
-    if (!app_id) return 16929;
-    return isProduction() ? app_id.production : app_id.staging;
+    const env_app_id = process.env.APP_ID;
+    if (env_app_id) return Number(env_app_id);
+    return 16929;
 };
 // [/AI]
 
@@ -175,6 +183,10 @@ export const getOAuthAppId = (): string => {
 };
 
 export const getOAuthRedirectUri = (): string => {
+    const env_domain = getEnvDomain();
+    if (env_domain) {
+        return isProduction() ? `https://${env_domain}` : `https://staging.${env_domain}`;
+    }
     const auth = config_data.auth as Record<string, unknown>;
     return isProduction()
         ? ((auth.oauth_redirect_uri_production as string) ?? '')
@@ -247,14 +259,17 @@ export const getApiBaseUrl = (): string => {
  * @returns Help Centre URL (e.g., "https://trade.deriv.com/help-centre")
  */
 export const getHomeUrl = (): string => {
+    if (getEnvDomain()) return getBrandUrl();
     return substituteDerivDomain(((config_data.platform as Record<string, unknown>).home_url as string) ?? '');
 };
 
 export const getHelpCentreUrl = (): string => {
+    if (getEnvDomain()) return getBrandUrl();
     return substituteDerivDomain(config_data.platform.help_centre_url);
 };
 
 export const getDepositUrl = (): string => {
+    if (getEnvDomain()) return `${getBrandUrl()}/transfer`;
     const deposit = (config_data as Record<string, unknown>).deposit_url as
         | { staging: string; production: string }
         | undefined;
@@ -263,6 +278,7 @@ export const getDepositUrl = (): string => {
 };
 
 export const getSignupUrl = (): string => {
+    if (getEnvDomain()) return getBrandUrl();
     const signup = (config_data as Record<string, unknown>).signup_url as
         | { staging: string; production: string }
         | undefined;

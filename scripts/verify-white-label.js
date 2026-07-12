@@ -16,19 +16,31 @@ const config = JSON.parse(fs.readFileSync(path.join(ROOT, 'brand.config.json'), 
 const errors = [];
 const warnings = [];
 
+// The domain can come from brand.config.json OR the DOMAIN env var (preferred).
+// When DOMAIN is set at runtime, brand_domain/brand_hostname/deposit_url in
+// brand.config.json are placeholder fallbacks only and don't need to be filled in.
+const has_env_domain = Boolean(process.env.DOMAIN);
+
 // Required string fields
 const requiredStrings = [
     ['brand_name', config.brand_name],
-    ['brand_domain', config.brand_domain],
     ['brand_logo', config.brand_logo],
-    ['brand_hostname.production', config.brand_hostname?.production],
     ['platform.name', config.platform?.name],
     ['auth.production', config.auth?.production],
-    ['deposit_url.staging', config.deposit_url?.staging],
-    ['deposit_url.production', config.deposit_url?.production],
     ['api_core.production', config.api_core?.production],
     ['api.production', config.api?.production],
 ];
+
+if (!has_env_domain) {
+    requiredStrings.push(
+        ['brand_domain', config.brand_domain],
+        ['brand_hostname.production', config.brand_hostname?.production],
+        ['deposit_url.staging', config.deposit_url?.staging],
+        ['deposit_url.production', config.deposit_url?.production]
+    );
+} else {
+    console.log(`ℹ️  Using DOMAIN env var ("${process.env.DOMAIN}") — brand_domain fields in brand.config.json are ignored.\n`);
+}
 
 for (const [field, value] of requiredStrings) {
     if (!value || typeof value !== 'string' || value.trim() === '') {
@@ -52,21 +64,18 @@ if (config.brand_logo_dark && !config.brand_logo_dark.endsWith('.svg')) {
     errors.push(`brand_logo_dark must be an SVG file path ending in .svg (got: "${config.brand_logo_dark}")`);
 }
 
-// app_id must be numeric
-if (config.app_id) {
-    if (typeof config.app_id.staging !== 'number') {
-        errors.push(`app_id.staging must be a number (got: ${typeof config.app_id.staging})`);
+// app_id is read from the APP_ID env var at runtime, not from brand.config.json
+if (process.env.APP_ID) {
+    if (Number.isNaN(Number(process.env.APP_ID))) {
+        errors.push(`APP_ID env var must be a number (got: "${process.env.APP_ID}")`);
     }
-    if (typeof config.app_id.production !== 'number') {
-        errors.push(`app_id.production must be a number (got: ${typeof config.app_id.production})`);
-    }
-    if (config.app_id.staging === 16929 && config.app_id.production === 16929) {
+    if (process.env.APP_ID === '16929') {
         warnings.push(
-            'app_id is still using the default Deriv app_id (16929). Register your own at https://api.deriv.com'
+            'APP_ID is still using the default Deriv app_id (16929). Register your own at https://api.deriv.com'
         );
     }
 } else {
-    warnings.push('app_id is not configured. WebSocket will use the default. See WHITE_LABEL.md for setup.');
+    warnings.push('APP_ID env var is not set. WebSocket will use the default (16929). See WHITE_LABEL.md for setup.');
 }
 
 // Logo SVG files must exist in assets/brand/
@@ -176,6 +185,5 @@ if (errors.length > 0) {
 console.log('\n✅ White-label config is valid.');
 console.log(`   Brand: ${config.brand_name}`);
 console.log(`   Platform: ${config.platform?.name}`);
-console.log(`   Production URL: https://${config.brand_hostname?.production}`);
-console.log(`   App ID (staging): ${config.app_id?.staging ?? 'not set'}`);
-console.log(`   App ID (production): ${config.app_id?.production ?? 'not set'}\n`);
+console.log(`   Production URL: https://${process.env.DOMAIN ?? config.brand_hostname?.production}`);
+console.log(`   App ID (APP_ID env var): ${process.env.APP_ID ?? 'not set (defaults to 16929)'}\n`);
