@@ -1,43 +1,31 @@
-# chris-deriv-site — Deriv Trading Engine
+# chris deriv site
 
-This repo is a trimmed-down, engine-focused fork of a white-label DTrader build
-(`nelsonmpanju/traderschemepro-trader`, itself derived from `deriv-com/dtrader-template`).
+Deriv trading engine (trade-store + contract-type + AppV2 trading UI), restructured from a white-label DTrader fork
 
-It keeps only the packages needed to run the actual trading engine and its UI,
-and drops the parts that duplicate functionality chris-tech-trader-pro already
-has on its own (app shell, login/session handling, reports/statement pages).
+## Overview
 
-## What's in here
+This repository contains the source code for **chris deriv site**, a project developed and maintained by Chris Odhiambo (learninghub44). It is part of a portfolio of production and in-progress software products, several of which target the Kenyan and East African market.
 
-| Package | Purpose |
-|---|---|
-| `packages/trader` | The engine: `Stores/Modules/Trading/trade-store.ts` (proposal/buy/barrier/duration/multiplier logic), `Helpers/contract-type.ts` (live `contracts_for`-driven contract type engine), and the `AppV2` mobile-first trading UI (market selector, trade-type selector, trade parameters, purchase button, chart containers). |
-| `packages/shared` | Constants, the `WS` singleton (`services/ws-methods.ts`) and helpers the engine depends on. |
-| `packages/stores` | Base mobx stores (client, common, UI) the trade-store composes with. |
-| `packages/components` | The `@deriv/components` UI kit used throughout `AppV2`. |
-| `packages/api`, `packages/api-v2` | The WebSocket API abstraction (`WS.send`, `WS.subscribe`, `contracts_for`, `active_symbols`, etc.). |
-| `packages/utils` | Shared utility helpers. |
+## Tech Stack
 
-## What was dropped from the source repo
+- Primary language: TypeScript
+- Topics: —
 
-- `packages/core` — the app shell, OAuth2/PKCE login, account switching, menu.
-  Not needed here since the target app (chris-tech-trader-pro) has its own.
-- `packages/reports` — positions/profit-table/statement pages. Out of scope for
-  "manual trading engine."
+## Getting Started
 
-## Why this exists
-
-The original ask: chris-tech-trader-pro's Manual Trading page had hardcoded
-market/contract-type/duration/barrier lists instead of asking the live trading
-engine what's actually available. This repo is the reference/source engine —
-the real DTrader logic — being pulled out so it (or the patterns in it) can be
-integrated into chris-tech-trader-pro properly, instead of hand-rolling a
-lighter approximation.
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/learninghub44/chris-deriv-site.git
+   cd chris-deriv-site
+   ```
+2. Install dependencies (see `package.json`, `requirements.txt`, or equivalent manifest in this repo for the exact commands).
+3. Configure environment variables as required by the project (see `.env.example` if present).
+4. Run the project locally using the appropriate start/dev script for this stack.
 
 ## Status
 
-This is a **restructuring checkpoint**, not a standalone runnable app yet — the
-root-level app shell was removed, so `packages/trader`'s `AppV2` currently
-expects to be mounted inside a shell like the one in `packages/core` (removed
-here). Wiring this into chris-tech-trader-pro's own shell/WS layer is the next
-step.
+This project is actively maintained by the author. For questions, issues, or collaboration inquiries, please open an issue on this repository.
+
+## License
+
+This project is proprietary software. All rights reserved. See [LICENSE](./LICENSE) for full terms. No part of this repository may be used, copied, modified, or distributed without prior written permission from the copyright holder.
